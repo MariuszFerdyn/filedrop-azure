@@ -56,7 +56,7 @@
     }
   },
   "variables": {
-    "scenarioPrefix": "FileDrop",
+    "scenarioPrefix": "filedrop",
     "imagePublisher": "Canonical",
     "imageOffer": "UbuntuServer",
     "ubuntuOSVersion": "18.04-LTS",
@@ -69,7 +69,7 @@
     "vmName": "[concat(variables('scenarioPrefix'),'VM')]",
     "virtualNetworkName": "[concat(variables('scenarioPrefix'),'Vnet')]",
     "_artifactsLocation": "https://raw.githubusercontent.com/MariuszFerdyn/filedrop-azure/main/scripts/filedrop.sh",
-    "_commandtoexecute":  "/bin/bash filedrop.sh",
+    "_commandtoexecute":  "sh filedrop.sh",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "linuxConfiguration": {
       "disablePasswordAuthentication": true,
@@ -193,7 +193,7 @@
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
         "type": "CustomScript",
-        "typeHandlerVersion": "2.0",
+        "typeHandlerVersion": "2.1",
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
