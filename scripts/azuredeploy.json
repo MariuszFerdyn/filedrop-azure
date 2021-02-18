@@ -16,19 +16,22 @@
       ],
       "metadata": {
         "description": "Size of vm"
-      }
+      },
+      "defaultValue": "Standard_DS1_v2"
     },
     "username": {
       "type": "string",
       "metadata": {
         "description": "Username for the Virtual Machine."
-      }
+      },
+      "defaultValue": "filedrop"
     },
     "Solution_Name": {
       "type": "string",
       "metadata": {
         "description": "Virtual Machine Name."
-      }
+      },
+      "defaultValue": "filedrop"
     },
     "location": {
       "type": "string",
@@ -39,10 +42,10 @@
     },
     "authenticationType": {
       "type": "string",
-      "defaultValue": "sshPublicKey",
+      "defaultValue": "password",
       "allowedValues": [
-        "sshPublicKey",
-        "password"
+        "password",
+        "sshPublicKey"
       ],
       "metadata": {
         "description": "Type of authentication to use on the Virtual Machine. SSH key is recommended."
@@ -54,31 +57,31 @@
         "description": "SSH Key or password for the Virtual Machine. SSH key is recommended."
       }
     },
-        "autoShutdownStatus": {
-            "type": "string",
-            "allowedValues": [
-                "Enabled",
-                "Disabled"
-            ],
-            "metadata": {
-                "description": "Whether to automatically shutdown the VM daily."
-            },
-            "defaultValue": "Enabled"
-        },
-        "autoShutdownTimeZone": {
-            "type": "string",
-            "metadata": {
-                "description": "The time zone for daily auto-shutdown."
-            },
-            "defaultValue": "Pacific Standard Time"
-        },
-        "autoShutdownTime": {
-            "type": "string",
-            "metadata": {
-                "description": "The time for daily auto-shutdown."
-            },
-            "defaultValue": "23:00"
-        }
+    "autoShutdownStatus": {
+      "type": "string",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "Whether to automatically shutdown the VM daily."
+      },
+      "defaultValue": "Enabled"
+    },
+    "autoShutdownTimeZone": {
+      "type": "string",
+      "metadata": {
+        "description": "The time zone for daily auto-shutdown."
+      },
+      "defaultValue": "GMT Standard Time"
+    },
+    "autoShutdownTime": {
+      "type": "string",
+      "metadata": {
+        "description": "The time for daily auto-shutdown."
+      },
+      "defaultValue": "23:00"
+    }
   },
   "variables": {
     "scenarioPrefix": "[parameters('Solution_Name')]",
@@ -94,7 +97,7 @@
     "vmName": "[concat(variables('scenarioPrefix'),'VM')]",
     "virtualNetworkName": "[concat(variables('scenarioPrefix'),'Vnet')]",
     "_artifactsLocation": "https://raw.githubusercontent.com/MariuszFerdyn/filedrop-azure/main/scripts/filedrop.sh",
-    "_commandtoexecute":  "sh filedrop.sh",
+    "_commandtoexecute": "sh filedrop.sh",
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "linuxConfiguration": {
       "disablePasswordAuthentication": true,
@@ -165,28 +168,28 @@
         ]
       }
     },
-	{
-            "name": "[concat('shutdown-computevm-', variables('vmName'))]",
-            "type": "Microsoft.DevTestLab/schedules",
-            "apiVersion": "2017-04-26-preview",
-            "location": "[parameters('location')]",
-            "properties": {
-                "status": "[parameters('autoShutdownStatus')]",
-                "taskType": "ComputeVmShutdownTask",
-                "dailyRecurrence": {
-                    "time": "[parameters('autoShutdownTime')]"
-                },
-                "timeZoneId": "[parameters('autoShutdownTimeZone')]",
-                "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]",
-                "notificationSettings": {
-                    "status": "Disabled",
-                    "timeInMinutes": "30"
-                }
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
-            ]
+    {
+      "name": "[concat('shutdown-computevm-', variables('vmName'))]",
+      "type": "Microsoft.DevTestLab/schedules",
+      "apiVersion": "2017-04-26-preview",
+      "location": "[parameters('location')]",
+      "properties": {
+        "status": "[parameters('autoShutdownStatus')]",
+        "taskType": "ComputeVmShutdownTask",
+        "dailyRecurrence": {
+          "time": "[parameters('autoShutdownTime')]"
         },
+        "timeZoneId": "[parameters('autoShutdownTimeZone')]",
+        "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]",
+        "notificationSettings": {
+          "status": "Disabled",
+          "timeInMinutes": "30"
+        }
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+      ]
+    },
     {
       "apiVersion": "2016-04-30-preview",
       "type": "Microsoft.Compute/virtualMachines",
